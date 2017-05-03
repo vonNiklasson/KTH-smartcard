@@ -4,6 +4,7 @@
 void putchar(char d_out);
 char getchar(void);
 void string_in(char * string);
+bit compare_string(char * input_string, const char * candidate_string);
 
 /* Sends one char */
 void putchar(char d_out) {
@@ -35,7 +36,7 @@ void string_in(char * string) {
     }
 }
 
-bit check_password(char * input_string, const char * candidate_string) {
+bit compare_string(char * input_string, const char * candidate_string) {
     /* compares input with the candidate string */
     char i, c, d;
     for(i=0; ; i++) {
