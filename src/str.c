@@ -26,9 +26,9 @@ char get_char(void) {
 void string_in(char * string) {
     char charCount, c;
     for(charCount = 0; ; charCount++) {
-        c = getchar();          /* input 1 character         */
+        c = get_char();         /* input 1 character         */
         string[charCount] = c;  /* store the character       */
-        // putchar( c );        /* don't echo the character  */
+        // put_char( c );       /* don't echo the character  */
         /* end of input */
         if((charCount == (MAX_STRING-1)) || (c=='\r' )) {
             string[charCount] = '\0'; /* add "end of string" */
@@ -42,7 +42,7 @@ void string_out(const char * string) {
     for(i = 0 ; ; i++) {
         k = string[i];
         if( k == '\0') return;   /* found end of string */
-        putchar(k); 
+        put_char(k); 
     }
     return;
 }
