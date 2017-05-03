@@ -11,8 +11,8 @@
 #include "initialize.c"
 #include "str.c"
 
-bit wait_for_card_insert(void);
-bit wait_for_card_withdraw(void);
+void wait_for_card_insert(void);
+void wait_for_card_withdraw(void);
 void delay(char millisec);
 
 void main(void) {
