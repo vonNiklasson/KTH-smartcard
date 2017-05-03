@@ -39,7 +39,7 @@ void main( void)
        delay(50);  /* extra delay   */       
 
        /* ask the question */
-       string_out( "who is it?\r\n");
+       string_out( "ID please?\r\n");
 
        delay(100); /* USART is buffered, so wait until all chars sent  */
 
@@ -50,7 +50,7 @@ void main( void)
        string_in( &input_string[0] );
          
        /* Compare the answer string with the correct answer */
-       compare = check_password( &input_string[0], "me, please open" );
+       compare = check_password( &input_string[0], "1337" );
 
        if( compare == 1)
          PORTC.2 = 1; /* unlock, the answer is correct */

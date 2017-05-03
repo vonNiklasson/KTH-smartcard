@@ -40,7 +40,8 @@ void delay( char );
 void main( void)
 {
    char i, c, d, charCount;
-   char input_string[MAX_STRING]; /* 15 char buffer for input string */   
+   char input_string[MAX_STRING]; /* 15 char buffer for input string */
+   
    bit compare;
    delay(50);  /* delay to stabilize power */
 
@@ -49,12 +50,12 @@ void main( void)
    string_in( &input_string[0] );
 
    /* Compare input and question text */
-   compare = check_candidate( &input_string[0], "who is it?" );
+   compare = check_candidate( &input_string[0], "ID please?" );
    
    delay(150);     /* give the lock time to get ready */
 
    if(compare == 1)
-     string_out("me, please open\r\n");  /* Observe '\r' */
+     string_out("1337\r\n");  /* Observe '\r' */
 
    while(1) nop(); /* end of communication */
 }
