@@ -10,16 +10,11 @@
 /* Include extended functions */
 #include "initialize.c"
 #include "str.c"
-
-void wait_for_card_insert(void);
-void wait_for_card_withdraw(void);
-void delay(char millisec);
+#include "hardware.c"
 
 void main(void) {
     /* Intialize some code */
     initialize();
-    PORTC.2 = 1;
-    delay(100);
 
     /* Loop forever, program logic below */
     while (1) {
@@ -31,36 +26,14 @@ void main(void) {
         overrun_recover();
 
         /* Light up this shit */
-        PORTC.2 = 1;
+        set_led(1);
         delay(100);
 
         wait_for_card_withdraw();
         delay(10);
 
         /* Turn off LED */
-        PORTC.2 = 0;
+        set_led(0);
         delay(100);
     }
-}
-
-/* Stall program til card is inserted */
-void wait_for_card_insert(void) {
-    while (PORTC.3 == 0);
-}
-
-/* Stall program til card is withdrawn */
-void wait_for_card_withdraw(void) {
-    while (PORTC.3 == 1);
-}
-
-/*  Delays a multiple of 1 milliseconds at 4 MHz
-    using the TMR0 timer by B. Knudsen
-*/
-
-void delay(char millisec) {
-    OPTION = 2;  /* prescaler divide by 8        */
-    do {
-        TMR0 = 0;
-        while (TMR0 < 125);   /* 125 * 8 = 1000  */
-    } while (--millisec > 0);
 }
