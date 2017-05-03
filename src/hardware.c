@@ -1,6 +1,7 @@
 void wait_for_card_insert(void);
 void wait_for_card_withdraw(void);
 void set_led(bit state);
+void print_to_display(char val);
 void delay(char millisec);
 
 /* Stall program til card is inserted */
@@ -15,6 +16,10 @@ void wait_for_card_withdraw(void) {
 
 void set_led(bit state) {
     PORTC.2 = state;
+}
+
+void print_to_display(char val) {
+    /* Print hex-value to 7-segment display */
 }
 
 /*  Delays a multiple of 1 milliseconds at 4 MHz

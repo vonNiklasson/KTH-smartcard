@@ -30,7 +30,7 @@ void string_in(char * string) {
         string[charCount] = c;  /* store the character       */
         // put_char( c );       /* don't echo the character  */
         /* end of input */
-        if((charCount == (MAX_STRING-1)) || (c=='\r' )) {
+        if((charCount == (MAX_STRING-1)) || (c=='\r')) {
             string[charCount] = '\0'; /* add "end of string" */
             return;
         }
