@@ -2,7 +2,7 @@
 
 /* Prototypes */
 void initialize(void);
-void OverrunRecover(void);
+void overrun_recover(void);
 
 void initialize(void) {
     TRISA.0 = 1; /* RA0 not to disturb PK2 UART Tool */
@@ -33,7 +33,7 @@ void initialize(void) {
     PORTC.2 = 0;  /* RC2 initially locked            */
 }
 
-void OverrunRecover(void) {
+void overrun_recover(void) {
     char trash;
     trash = RCREG;
     trash = RCREG;
