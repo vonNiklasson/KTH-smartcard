@@ -44,12 +44,12 @@ void main(void) {
 }
 
 /* Stall program til card is inserted */
-bit wait_for_card_insert(void) {
+void wait_for_card_insert(void) {
     while (PORTC.3 == 0);
 }
 
 /* Stall program til card is withdrawn */
-bit wait_for_card_withdraw(void) {
+void wait_for_card_withdraw(void) {
     while (PORTC.3 == 1);
 }
 
