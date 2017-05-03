@@ -18,6 +18,8 @@ void delay(char millisec);
 void main(void) {
     /* Intialize some code */
     initialize();
+    PORTC.2 = 1;
+    delay(100);
 
     /* Loop forever, program logic below */
     while (1) {
