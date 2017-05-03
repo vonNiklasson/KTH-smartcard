@@ -4,6 +4,7 @@
 void put_char(char d_out);
 char get_char(void);
 void string_in(char * string);
+void string_out(const char * string);
 bit compare_string(char * input_string, const char * candidate_string);
 
 /* Sends one char */
@@ -35,6 +36,17 @@ void string_in(char * string) {
         }
     }
 }
+
+void string_out(const char * string) {
+    char i, k;
+    for(i = 0 ; ; i++) {
+        k = string[i];
+        if( k == '\0') return;   /* found end of string */
+        putchar(k); 
+    }
+    return;
+}
+
 
 bit compare_string(char * input_string, const char * candidate_string) {
     /* compares input with the candidate string */
