@@ -1,7 +1,7 @@
 import shutil
 import os
 
-source = 'C:\Users\Erik\Documents\GitHub\KTH-smartcard'
+source = 'C:\Users\Erik\Documents\GitHub\KTH-smartcard\src'
 destination = 'C:\Users\Erik\Downloads\PK2proj\PK2proj\Work'
 
 
