@@ -36,10 +36,10 @@ void main( void)
      {
        while( PORTC.3 == 0) ; /* wait for card insertion */
        delay(100); /* card debounce */
-       delay(50);  /* extra delay   */       
+       delay(50);  /* extra delay   */
 
        /* ask the question */
-       string_out( "ID please?\r\n");
+       string_out("ID please?\r\n");
 
        delay(100); /* USART is buffered, so wait until all chars sent  */
 
@@ -47,17 +47,17 @@ void main( void)
        OverrunRecover();
 
        /* get the answer string from the card */
-       string_in( &input_string[0] );
+       string_in(&input_string[0]);
          
        /* Compare the answer string with the correct answer */
        compare = check_password( &input_string[0], "1337" );
 
-       if( compare == 1)
+       if(compare == 1)
          PORTC.2 = 1; /* unlock, the answer is correct */
         
-       delay(100);  /* extra delay */ 
+       delay(100);  /* extra delay */
 
-       while( PORTC.3 == 1); /* wait for card removal */
+       while(PORTC.3 == 1); /* wait for card removal */
 
        delay(10);
 
