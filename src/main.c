@@ -115,24 +115,30 @@ void main(void) {
     }
 }
 
+/* Check if the card exist in the array */
 bit card_exist(char * card_id) {
     return 0;
 }
 
+/* Check if the card id _format_ is valid, 
+   base it on length or something */
 bit card_id_is_valid(char * card_id) {
     return 1;
 }
 
+/* Get the card access value from the array */
 char get_stored_card_access(char * card_id) {
     return 5;
 }
 
+/* Add a new card id to the array */
 void add_card(char * card_id) {
-    /* Add the card to some array */
+    
 }
 
+/* Store the access_count to the corresponding card */
 void save_card_info(char * card_id, char access_count) {
-    /* Store the access_count to the corresponding card */
+    
 }
 
 
