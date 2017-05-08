@@ -101,13 +101,13 @@ void main(void) {
 
         /* Print test data 1 */
         reg_get_word(&str[0], 0);
-        str[8] = 0;
+        str[7] = 0;
         string_out(str);
         string_out("\r\n");
 
         /* Print test data 2 */
         reg_get_word(&str[0], 1);
-        str[8] = 0;
+        str[7] = 0;
         string_out(str);
         string_out("\r\n");
 
@@ -133,7 +133,7 @@ char get_stored_card_access(char * card_id) {
 
 /* Add a new card id to the array */
 void add_card(char * card_id) {
-    
+
 }
 
 /* Store the access_count to the corresponding card */
