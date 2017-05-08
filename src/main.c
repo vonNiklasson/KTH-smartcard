@@ -41,7 +41,12 @@ void main(void) {
     while (1) {
         /* Wait for card insertion */
         wait_for_card_insert();
+        delay(100); /* card debounce */
+        delay(50);  /* extra delay   */
+
         string_out("Inserted\r\n");
+
+        delay(100); /* USART is buffered, so wait until all chars sent  */
 
         overrun_recover();
 
@@ -83,9 +88,13 @@ void main(void) {
         /* Print the number of accesses the user have left */
         //print_to_display(access_count);
 
+        delay(100);
         wait_for_card_withdraw();
+        delay(10);
+
         set_led(0);
         string_out("Widthdrawn\r\n");
+        delay(100); /* USART is buffered, so wait until all chars sent  */
 
 
         reg_get_word(&str[0], 0);
@@ -93,6 +102,7 @@ void main(void) {
         string_out("\r\n");
 
         overrun_recover();
+        delay(100);
     }
 }
 
