@@ -128,7 +128,27 @@ void save_card_info(char * card_id, char access_count) {
 
 
 
+void reg_put_word(const char * word, char reg_offset) {
+    int offset = reg_offset * 8;
 
+    char c;
+    int i;
+    for (i = 0; i < 8; i++) {
+        reg_put_char(c, offset + i);
+		word[i] = c;
+    }
+}
+
+void reg_get_word(char * word, char reg_offset) {
+    int offset = reg_offset * 8;
+	
+    int i;
+    char c;
+    for (i = 0; i < 8; i++) {
+        c = reg_get_char(offset + i);
+		word[i] = c;
+    }
+}
 
 
 void reg_put_char(char data, char EEPROMadress) {
@@ -158,26 +178,4 @@ char reg_get_char(char EEPROMadress) {
     RD = 0;
     return temp;          /* data to be read                   */
     /* End of read EEPROM-data sequence                        */
-}
-
-void reg_put_word(const char * word, char reg_offset) {
-    int offset = reg_offset * 8;
-
-    int i, k;
-    for (i = 0; i < 8; i++) {
-		k = offset + i;
-        reg_put_char(*word, k);
-		word++;
-    }
-}
-
-void reg_get_word(char * word, char reg_offset) {
-    int offset = reg_offset * 8;
-	
-    int i, k;
-    for (i = 0; i < 8; i++) {
-		k = offset + i;
-        *word = reg_get_char(k);
-		word++;
-    }
 }
