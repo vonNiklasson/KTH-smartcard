@@ -35,8 +35,11 @@ void main(void) {
     char access_count;
     bit access = 0;
 
-    char * str = "test0000";
-    reg_put_word(&str[0], 0);
+    const char * test_str1 = "test0000";
+    const char * test_str2 = "test1111";
+    reg_put_word(&test_str1[0], 0);
+    reg_put_word(&test_str2[0], 1);
+    char str[8];
     /* Loop forever, program logic below */
     while (1) {
         /* Wait for card insertion */
@@ -96,12 +99,18 @@ void main(void) {
         string_out("Widthdrawn\r\n");
         delay(100); /* USART is buffered, so wait until all chars sent  */
 
-
+        /* Print test data 1 */
         reg_get_word(&str[0], 0);
+        str[8] = 0;
         string_out(str);
         string_out("\r\n");
 
-        overrun_recover();
+        /* Print test data 2 */
+        reg_get_word(&str[0], 1);
+        str[8] = 0;
+        string_out(str);
+        string_out("\r\n");
+
         delay(100);
     }
 }
