@@ -12,6 +12,7 @@
 #include "initialize.c"
 #include "str.c"
 #include "hardware.c"
+#include "register.c"
 
 bit card_exist(char * card_id);
 bit card_id_is_valid(char * card_id);
@@ -29,7 +30,11 @@ void main(void) {
     char access_count;
     bit access = 0;
 
+    char * str;
     /* Loop forever, program logic below */
+    reg_put_word("test0000", 0);
+    reg_put_word("test1111", 1);
+    reg_put_word("test2222", 2);
     while (1) {
         /* Wait for card insertion */
         wait_for_card_insert();
@@ -78,6 +83,17 @@ void main(void) {
         delay(10);
         set_led(0);
         string_out("Card widthdrawn\r\n");
+
+
+        reg_get_word(&str, 0);
+        string_out(str);
+        string_out("\r\n");
+        reg_get_word(&str, 1);
+        string_out(str);
+        string_out("\r\n");
+        reg_get_word(&str, 2);
+        string_out(str);
+        string_out("\r\n");
 
         overrun_recover();
     }

@@ -2,7 +2,7 @@ void reg_put(char data, char EEPROMadress);
 char reg_get(char EEPROMadress);
 
 void reg_put_word(char * word, char reg_offset);
-char * reg_get_word(char reg_offset);
+void reg_get_word(char reg_offset);
 
 void reg_put_char(char data, char EEPROMadress) {
     /* Put char in specific EEPROM-adress */
@@ -42,11 +42,11 @@ void reg_put_word(char * word, char reg_offset) {
     }
 }
 
-char * reg_get_word(char * word, char reg_offset) {
+void reg_get_word(char * word, char reg_offset) {
     int offset = reg_offset * 8;
 
     int i;
-    for (i = real_offset; i < real_offset + 8; i++) {
+    for (i = 0; i < 8; i++) {
         *(word + i) = reg_get_char(offset + i);
     }
 }
