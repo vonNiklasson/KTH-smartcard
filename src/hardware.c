@@ -7,15 +7,18 @@ void delay(char millisec);
 /* Stall program til card is inserted */
 void wait_for_card_insert(void) {
     while (PORTC.3 == 0);
+    delay(10);
 }
 
 /* Stall program til card is withdrawn */
 void wait_for_card_withdraw(void) {
     while (PORTC.3 == 1);
+    delay(10);
 }
 
 void set_led(bit state) {
     PORTC.2 = state;
+    delay(10);
 }
 
 void print_to_display(char val) {

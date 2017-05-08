@@ -13,8 +13,8 @@
 #include "str.c"
 #include "hardware.c"
 
-void reg_put(char data, char EEPROMadress);
-char reg_get(char EEPROMadress);
+void reg_put_char(char data, char EEPROMadress);
+char reg_get_char(char EEPROMadress);
 
 void reg_put_word(const char * word, char reg_offset);
 void reg_get_word(char * word, char reg_offset);
@@ -35,16 +35,16 @@ void main(void) {
     char access_count;
     bit access = 0;
 
-    char * str;
+    //char * str = "test0000";
+    //reg_put_word(&str[0], 0);
     /* Loop forever, program logic below */
-    reg_put_word("test0000", 0);
-    reg_put_word("test1111", 1);
-    reg_put_word("test2222", 2);
     while (1) {
         /* Wait for card insertion */
         wait_for_card_insert();
-        delay(150);
+        delay(50);
         string_out("Card inserted\r\n");
+        delay(50);
+        nop();
 
         overrun_recover();
 
@@ -55,50 +55,49 @@ void main(void) {
          * certain format, all numbers or something */
 
         /* Check if card id exists since earlier */
-        _card_exist = card_exist(&card_str[0]);
-        if (_card_exist == 0) {
-            /* Add the card id to the array and store a new value */
-            add_card(&card_str[0]);
-            save_card_info(&card_str[0], NEW_ACCESS_COUNT);
-        }
+        //_card_exist = card_exist(&card_str[0]);
+        //if (_card_exist == 0) {
+        //    /* Add the card id to the array and store a new value */
+        //    add_card(&card_str[0]);
+        //    save_card_info(&card_str[0], NEW_ACCESS_COUNT);
+        //}
 
         /* Get the number or tries the card has left */
-        access_count = get_stored_card_access(&card_str[0]);
-        if (access_count > 0) {
+        //access_count = get_stored_card_access(&card_str[0]);
+        //if (access_count > 0) {
             /* If it's more than 0, decrease the number and give access */
-            access_count--;
-            access = 1;
-        } else {
-            /* If it's 0, give no access */
-            access = 0;
-        }
+        //    access_count--;
+        //    access = 1;
+        //} else {
+        //    /* If it's 0, give no access */
+        //    access = 0;
+        //}
 
-        /* If the user has access, turn on the led */
+        /* If the user has access, turn on the led 
         if (access) {
             set_led(1);
             delay(10);
 
             save_card_info(&card_str[0], access_count);
         }
+        */
+        set_led(1);
+        delay(50);
 
         /* Print the number of accesses the user have left */
-        print_to_display(access_count);
+        //print_to_display(access_count);
 
         wait_for_card_withdraw();
-        delay(10);
+        delay(50);
         set_led(0);
         string_out("Card widthdrawn\r\n");
+        delay(50);
 
 
-        reg_get_word(&str, 0);
-        string_out(str);
-        string_out("\r\n");
-        reg_get_word(&str, 1);
-        string_out(str);
-        string_out("\r\n");
-        reg_get_word(&str, 2);
-        string_out(str);
-        string_out("\r\n");
+        //reg_get_word(&str[0], 0);
+        //string_out(str);
+        //string_out("\r\n");
+        delay(50);
 
         overrun_recover();
     }

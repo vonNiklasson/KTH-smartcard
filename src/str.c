@@ -42,7 +42,7 @@ void string_out(const char * string) {
     for(i = 0 ; ; i++) {
         k = string[i];
         if( k == '\0') return;   /* found end of string */
-        put_char(k); 
+        put_char(k);
     }
     return;
 }
