@@ -35,21 +35,18 @@ void main(void) {
     char access_count;
     bit access = 0;
 
-    //char * str = "test0000";
-    //reg_put_word(&str[0], 0);
+    char * str = "test0000";
+    reg_put_word(&str[0], 0);
     /* Loop forever, program logic below */
     while (1) {
         /* Wait for card insertion */
         wait_for_card_insert();
-        delay(50);
-        string_out("Card inserted\r\n");
-        delay(50);
-        nop();
+        string_out("Inserted\r\n");
 
         overrun_recover();
 
         /* Get id from card, stored in card_str */
-        string_in(&card_str[0]);
+        //string_in(&card_str[0]);
 
         /* Maybe make sure the id follows a 
          * certain format, all numbers or something */
@@ -82,22 +79,18 @@ void main(void) {
         }
         */
         set_led(1);
-        delay(50);
 
         /* Print the number of accesses the user have left */
         //print_to_display(access_count);
 
         wait_for_card_withdraw();
-        delay(50);
         set_led(0);
-        string_out("Card widthdrawn\r\n");
-        delay(50);
+        string_out("Widthdrawn\r\n");
 
 
-        //reg_get_word(&str[0], 0);
-        //string_out(str);
-        //string_out("\r\n");
-        delay(50);
+        reg_get_word(&str[0], 0);
+        string_out(str);
+        string_out("\r\n");
 
         overrun_recover();
     }
