@@ -134,16 +134,16 @@ void reg_put_word(const char * word, char reg_offset) {
     char c;
     int i;
     for (i = 0; i < 8; i++) {
+        c = word[i];
         reg_put_char(c, offset + i);
-		word[i] = c;
     }
 }
 
 void reg_get_word(char * word, char reg_offset) {
     int offset = reg_offset * 8;
-	
-    int i;
+
     char c;
+    int i;
     for (i = 0; i < 8; i++) {
         c = reg_get_char(offset + i);
 		word[i] = c;
