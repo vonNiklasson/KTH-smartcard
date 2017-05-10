@@ -31,11 +31,6 @@ void initialize(void) {
     ANSEL.7 = 0;  /* RC3 digital input               */
     TRISC.2 = 0;  /* RC2 lock (lightdiode) is output */
     PORTC.2 = 0;  /* RC2 initially locked            */
-
-    memory_cards[0] = 0;
-    memory_card_count = 0;
-
-    get_data_from_memory();
 }
 
 void overrun_recover(void) {

@@ -8,17 +8,17 @@
 #define MAX_STRING 16
 #define NEW_ACCESS_COUNT 5
 
+/* Include extended functions */
+#include "initialize.c"
+#include "str.c"
+#include "hardware.c"
+
 /* Allocate space for 7 cards */
 char memory_cards[8 * 7];
 char memory_card_count = 0;
 
 void get_data_from_memory(void);
 void set_data_to_memory(void);
-
-/* Include extended functions */
-#include "initialize.c"
-#include "str.c"
-#include "hardware.c"
 
 char get_card_offset(char * card_id);
 
@@ -31,6 +31,11 @@ void reg_get_word(char * word, char reg_offset);
 void main(void) {
     /* Initialize some code */
     initialize();
+
+    /* Extended initialize */
+    memory_cards[0] = 0;
+    memory_card_count = 0;
+    get_data_from_memory();
 
     /* String to store text from card */
     char card_str[8];
