@@ -14,7 +14,7 @@
 #include "hardware.c"
 
 /* Allocate space for 7 cards */
-char memory_cards[8 * 7];
+char memory_cards[8 * 2];
 char memory_card_count;
 
 void get_data_from_memory(void);
@@ -91,6 +91,7 @@ void main(void) {
 
 char get_card_offset(char * card_id) {
     int i, j, k;
+    char tmpChar1, tmpChar2;
     /* Loops through the number of cards */
     for (i = 0; i < memory_card_count; i++) {
         /* Sets j to the card offset */
@@ -98,7 +99,9 @@ char get_card_offset(char * card_id) {
         /* Iterate the chars in the card strings */
         for (k = 0; k < 7; k++) {
             /* Check if the string matches */
-            if (memory_cards[j + k] != card_id[k]) {
+            tmpChar1 = memory_cards[j + k];
+            tmpChar2 = card_id[k];
+            if (tmpChar1 != tmpChar2) {
                 break;
             }
         }
@@ -118,7 +121,8 @@ void get_data_from_memory(void) {
     /* Temporay string for card data */
     char card[8];
     /* Initialize temp vars */
-    char i, j, k;
+    int i, j, k;
+    char temp_char;
     /* Count for how many cards that are stored */
     for (i = 0; i < memory_card_count; i++) {
         /* Get card i from memory */
@@ -127,9 +131,10 @@ void get_data_from_memory(void) {
         k = i * 8;
         /* Loop through the next 8 bytes in the local string */
         for (j = 0; j < 8; j++) {
-            memory_cards[k + j] = card[j];
+            temp_char = card[j];
+            memory_cards[k + j] = temp_char;
         }
-    }
+    }   
 }
 
 void set_data_to_memory(void) {
