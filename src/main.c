@@ -66,6 +66,12 @@ void main(void) {
 
         delay(100); /* Delay, because why not */
 
+        bit test = compare_string(&card_str[0], "joherik");
+
+        if (test) {
+            set_led(1);
+        }
+
         /* Get the card offset id (if it exists) */
         card_offset = get_card_offset(&card_str[0]);
 
