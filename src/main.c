@@ -17,6 +17,8 @@
 char memory_cards[8 * 2];
 char memory_card_count;
 
+char create_card(char * card_id);
+
 void get_data_from_memory(void);
 void set_data_to_memory(void);
 
@@ -69,8 +71,7 @@ void main(void) {
 
         if (card_offset == -1) {
             /* Add new card */
-        } else {
-
+            card_offset = create_card(&card_str[0]);
         }
 
 
@@ -117,6 +118,25 @@ char get_card_offset(char * card_id) {
     return -1;
 }
 
+char create_card(char * card_id) {
+    /* Get the new card offset */
+    card_offset = memory_card_count;
+    /* Add 1 to the memory card count */
+    memory_card_count = memory_card_count + 1;
+
+    int i;
+    char temp_char;
+    for (i = 0; i < 7; i++) {
+        temp_char = card_id[i];
+        memory_cards[card_offset + i] = temp_char;
+    }
+    /* Set the last byte to 0 */
+    memory_cards[card_offset + i + 1] = 0;
+
+    /* Return the new card offset */
+    return card_offset;
+}
+
 void get_data_from_memory(void) {
     /* Get how many cards that are saved in the memory */
     memory_card_count = reg_get_char(0);
@@ -136,7 +156,7 @@ void get_data_from_memory(void) {
             temp_char = card[j];
             memory_cards[k + j] = temp_char;
         }
-    }   
+    }
 }
 
 void set_data_to_memory(void) {
