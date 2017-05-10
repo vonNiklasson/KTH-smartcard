@@ -19,24 +19,28 @@ char reg_get_char(char EEPROMadress);
 void reg_put_word(const char * word, char reg_offset);
 void reg_get_word(char * word, char reg_offset);
 
-char get_card_arr_id(char * card_id);
+char get_card_offset_id(char * card_id);
 bit card_id_is_valid(char * card_id);
 char get_stored_card_access(char * card_id);
 void add_card(char * card_id);
 void save_card_info(char * card_id, char access_count);
+
+void get_data_from_memory(void);
+void set_data_to_memory(void);
+
+/* Allocate space for 7 cards */
+char memory_cards[8 * 7];
+char memory_card_count = 0;
 
 void main(void) {
     /* Initialize some code */
     initialize();
 
     /* String to store text from card */
-    char card_str[MAX_STRING];
-    char card_arr_id;
+    char card_str[8];
+    char card_offset_id;
     char access_count;
     bit access = 0;
-
-    /* Allocate space for 8 cards */
-    char memory_card[8 * 8];
 
     const char * test_str1 = "test0000";
     const char * test_str2 = "test1111";
@@ -63,8 +67,8 @@ void main(void) {
          * certain format, all numbers or something */
 
         /* Check if card id exists since earlier */
-        //card_arr_id = get_card_arr_id(&card_str[0]);
-        //if (card_arr_id == -1) {
+        //card_offset_id = get_card_offset_id(&card_str[0]);
+        //if (card_offset_id == -1) {
         //    /* Add the card id to the array and store a new value */
         //    add_card(&card_str[0]);
         //    save_card_info(&card_str[0], NEW_ACCESS_COUNT);
@@ -119,7 +123,7 @@ void main(void) {
 }
 
 /* Check if the card exist in the array */
-bit get_card_arr_id(char * card_id) {
+bit get_card_offset_id(char * card_id) {
     return 0;
 }
 
@@ -144,7 +148,29 @@ void save_card_info(char * card_id, char access_count) {
     
 }
 
+void get_data_from_memory(void) {
+    /* Get how many cards that are saved in the memory */
+    memory_card_count = reg_get_char(0);
+    /* Temporay string for card data */
+    char card[8];
+    /* Initialize temp vars */
+    char i, j, k;
+    /* Count for how many cards that are stored */
+    for (i = 0; i < memory_card_count; i++) {
+        /* Get card i from memory */
+        reg_get_word(&card[0], i);
+        /* Get start offset for card in local string */
+        k = i * 8;
+        /* Loop through the next 8 bytes in the local string */
+        for (j = 0; j < 8 j++) {
+            memory_cards[k + j] = card[j];
+        }
+    }
+}
 
+void set_data_to_memory(void) {
+
+}
 
 
 
