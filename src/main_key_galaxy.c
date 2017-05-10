@@ -47,7 +47,7 @@ void main( void)
 
    initserial();
 
-   string_in( &input_string[0]);
+   //string_in( &input_string[0]);
    
    delay(150);     /* give the lock time to get ready */
 
