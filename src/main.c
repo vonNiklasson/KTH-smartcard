@@ -8,10 +8,19 @@
 #define MAX_STRING 16
 #define NEW_ACCESS_COUNT 5
 
+/* Allocate space for 7 cards */
+char memory_cards[8 * 7];
+char memory_card_count = 0;
+
 /* Include extended functions */
 #include "initialize.c"
 #include "str.c"
 #include "hardware.c"
+
+char get_card_offset(char * card_id);
+
+void get_data_from_memory(void);
+void set_data_to_memory(void);
 
 void reg_put_char(char data, char EEPROMadress);
 char reg_get_char(char EEPROMadress);
@@ -19,20 +28,13 @@ char reg_get_char(char EEPROMadress);
 void reg_put_word(const char * word, char reg_offset);
 void reg_get_word(char * word, char reg_offset);
 
-void get_data_from_memory(void);
-void set_data_to_memory(void);
-
-/* Allocate space for 7 cards */
-char memory_cards[8 * 7];
-char memory_card_count = 0;
-
 void main(void) {
     /* Initialize some code */
     initialize();
 
     /* String to store text from card */
     char card_str[8];
-    char card_offset_id;
+    char card_offset;
     char card_access_count;
     bit has_access = 0;
 
@@ -55,8 +57,16 @@ void main(void) {
         /* Get id from card, stored in card_str */
         string_in(&card_str[0]);
 
-        /* Get the card offset id */
+        delay(100); /* Delay, because why not */
 
+        /* Get the card offset id (if it exists) */
+        card_offset = get_card_offset(&card_str[0]);
+
+        if (card_offset == -1) {
+
+        } else {
+
+        }
 
 
         /* Print the number of accesses the user have left */
@@ -72,6 +82,29 @@ void main(void) {
 
         delay(100);
     }
+}
+
+char get_card_offset(char * card_id) {
+    int i, j, k;
+    /* Loops through the number of cards */
+    for (i = 0; i < memory_card_count; i++) {
+        /* Sets j to the card offset */
+        j = i * 8;
+        /* Iterate the chars in the card strings */
+        for (k = 0; k < 7; k++) {
+            /* Check if the string matches */
+            if (memory_cards[j + k] != card_id[k]) {
+                break;
+            }
+        }
+        /* If all chars matched, return the offset id */
+        if (k == 7) {
+            return i;
+        }
+    }
+
+    /* Otherwise, return -1 */
+    return -1;
 }
 
 void get_data_from_memory(void) {
@@ -129,7 +162,7 @@ void reg_get_word(char * word, char reg_offset) {
     }
 }
 
-
+/* I got this online */
 void reg_put_char(char data, char EEPROMadress) {
     /* Put char in specific EEPROM-adress */
     /* Write EEPROM-data sequence                          */
@@ -146,6 +179,7 @@ void reg_put_char(char data, char EEPROMadress) {
     /* End of write EEPROM-data sequence                     */
 }
 
+/* I got this online */
 char reg_get_char(char EEPROMadress) {
     /* Get char from specific EEPROM-adress */
     /* Start of read EEPROM-data sequence                */
