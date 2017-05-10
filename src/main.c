@@ -19,12 +19,6 @@ char reg_get_char(char EEPROMadress);
 void reg_put_word(const char * word, char reg_offset);
 void reg_get_word(char * word, char reg_offset);
 
-char get_card_offset_id(char * card_id);
-bit card_id_is_valid(char * card_id);
-char get_stored_card_access(char * card_id);
-void add_card(char * card_id);
-void save_card_info(char * card_id, char access_count);
-
 void get_data_from_memory(void);
 void set_data_to_memory(void);
 
@@ -63,40 +57,9 @@ void main(void) {
         /* Get id from card, stored in card_str */
         //string_in(&card_str[0]);
 
-        /* Maybe make sure the id follows a 
-         * certain format, all numbers or something */
-
-        /* Check if card id exists since earlier */
-        //card_offset_id = get_card_offset_id(&card_str[0]);
-        //if (card_offset_id == -1) {
-        //    /* Add the card id to the array and store a new value */
-        //    add_card(&card_str[0]);
-        //    save_card_info(&card_str[0], NEW_ACCESS_COUNT);
-        //}
-
-        /* Get the number or tries the card has left */
-        //access_count = get_stored_card_access(&card_str[0]);
-        //if (access_count > 0) {
-            /* If it's more than 0, decrease the number and give access */
-        //    access_count--;
-        //    access = 1;
-        //} else {
-        //    /* If it's 0, give no access */
-        //    access = 0;
-        //}
-
-        /* If the user has access, turn on the led 
-        if (access) {
-            set_led(1);
-            delay(10);
-
-            save_card_info(&card_str[0], access_count);
-        }
-        */
-        set_led(1);
 
         /* Print the number of accesses the user have left */
-        //print_to_display(access_count);
+        print_to_display(access_count);
 
         delay(100);
         wait_for_card_withdraw();
@@ -122,32 +85,6 @@ void main(void) {
     }
 }
 
-/* Check if the card exist in the array */
-bit get_card_offset_id(char * card_id) {
-    return 0;
-}
-
-/* Check if the card id _format_ is valid, 
-   base it on length or something */
-bit card_id_is_valid(char * card_id) {
-    return 1;
-}
-
-/* Get the card access value from the array */
-char get_stored_card_access(char * card_id) {
-    return 5;
-}
-
-/* Add a new card id to the array */
-void add_card(char * card_id) {
-
-}
-
-/* Store the access_count to the corresponding card */
-void save_card_info(char * card_id, char access_count) {
-    
-}
-
 void get_data_from_memory(void) {
     /* Get how many cards that are saved in the memory */
     memory_card_count = reg_get_char(0);
@@ -169,7 +106,14 @@ void get_data_from_memory(void) {
 }
 
 void set_data_to_memory(void) {
-
+    /* Store the number of saved cards */
+    reg_put_char(memory_card_count, 0);
+    /* Initialize temp vars */
+    char i;
+    /* Count for how many cards that are stored */
+    for (i = 0; i < memory_card_count; i++) {
+        reg_put_word(&memory_cards[i], i);
+    }
 }
 
 
