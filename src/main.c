@@ -68,7 +68,7 @@ void main(void) {
         card_offset = get_card_offset(&card_str[0]);
 
         if (card_offset == -1) {
-
+            /* Add new card */
         } else {
 
         }
@@ -84,6 +84,8 @@ void main(void) {
         set_led(0);
         string_out("Widthdrawn\r\n");
         delay(100); /* USART is buffered, so wait until all chars sent  */
+
+        overrun_recover();
 
         delay(100);
     }
