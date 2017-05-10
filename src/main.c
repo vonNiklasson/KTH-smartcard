@@ -33,16 +33,14 @@ void main(void) {
     /* String to store text from card */
     char card_str[8];
     char card_offset_id;
-    char access_count;
-    bit access = 0;
+    char card_access_count;
+    bit has_access = 0;
 
-    const char * test_str1 = "test0000";
-    const char * test_str2 = "test1111";
-    reg_put_word(&test_str1[0], 0);
-    reg_put_word(&test_str2[0], 1);
-    char str[8];
     /* Loop forever, program logic below */
     while (1) {
+        /* Reset the display */
+        print_to_display(0);
+
         /* Wait for card insertion */
         wait_for_card_insert();
         delay(100); /* card debounce */
@@ -55,11 +53,14 @@ void main(void) {
         overrun_recover();
 
         /* Get id from card, stored in card_str */
-        //string_in(&card_str[0]);
+        string_in(&card_str[0]);
+
+        /* Get the card offset id */
+
 
 
         /* Print the number of accesses the user have left */
-        print_to_display(access_count);
+        print_to_display(card_access_count);
 
         delay(100);
         wait_for_card_withdraw();
@@ -68,18 +69,6 @@ void main(void) {
         set_led(0);
         string_out("Widthdrawn\r\n");
         delay(100); /* USART is buffered, so wait until all chars sent  */
-
-        /* Print test data 1 */
-        reg_get_word(&str[0], 0);
-        str[7] = 0;
-        string_out(str);
-        string_out("\r\n");
-
-        /* Print test data 2 */
-        reg_get_word(&str[0], 1);
-        str[7] = 0;
-        string_out(str);
-        string_out("\r\n");
 
         delay(100);
     }
