@@ -19,7 +19,7 @@ char reg_get_char(char EEPROMadress);
 void reg_put_word(const char * word, char reg_offset);
 void reg_get_word(char * word, char reg_offset);
 
-bit card_exist(char * card_id);
+char get_card_arr_id(char * card_id);
 bit card_id_is_valid(char * card_id);
 char get_stored_card_access(char * card_id);
 void add_card(char * card_id);
@@ -31,9 +31,12 @@ void main(void) {
 
     /* String to store text from card */
     char card_str[MAX_STRING];
-    bit _card_exist;
+    char card_arr_id;
     char access_count;
     bit access = 0;
+
+    /* Allocate space for 8 cards */
+    char memory_card[8 * 8];
 
     const char * test_str1 = "test0000";
     const char * test_str2 = "test1111";
@@ -60,8 +63,8 @@ void main(void) {
          * certain format, all numbers or something */
 
         /* Check if card id exists since earlier */
-        //_card_exist = card_exist(&card_str[0]);
-        //if (_card_exist == 0) {
+        //card_arr_id = get_card_arr_id(&card_str[0]);
+        //if (card_arr_id == -1) {
         //    /* Add the card id to the array and store a new value */
         //    add_card(&card_str[0]);
         //    save_card_info(&card_str[0], NEW_ACCESS_COUNT);
@@ -116,7 +119,7 @@ void main(void) {
 }
 
 /* Check if the card exist in the array */
-bit card_exist(char * card_id) {
+bit get_card_arr_id(char * card_id) {
     return 0;
 }
 
@@ -146,7 +149,7 @@ void save_card_info(char * card_id, char access_count) {
 
 
 void reg_put_word(const char * word, char reg_offset) {
-    int offset = reg_offset * 8;
+    int offset = (reg_offset * 8) + 1;
 
     char c;
     int i;
@@ -157,7 +160,7 @@ void reg_put_word(const char * word, char reg_offset) {
 }
 
 void reg_get_word(char * word, char reg_offset) {
-    int offset = reg_offset * 8;
+    int offset = (reg_offset * 8) + 1;
 
     char c;
     int i;
