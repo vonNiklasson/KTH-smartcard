@@ -12,15 +12,15 @@
 char memory_cards[8 * 7];
 char memory_card_count = 0;
 
+void get_data_from_memory(void);
+void set_data_to_memory(void);
+
 /* Include extended functions */
 #include "initialize.c"
 #include "str.c"
 #include "hardware.c"
 
 char get_card_offset(char * card_id);
-
-void get_data_from_memory(void);
-void set_data_to_memory(void);
 
 void reg_put_char(char data, char EEPROMadress);
 char reg_get_char(char EEPROMadress);
