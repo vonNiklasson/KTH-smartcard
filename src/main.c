@@ -42,7 +42,7 @@ void main(void) {
     get_data_from_memory();
 
     /* String to store text from card */
-    char card_str[8];
+    char card_str[MAX_STRING];
     char card_offset;
     char card_access_count;
     bit has_access = 0;
