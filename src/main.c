@@ -15,7 +15,7 @@
 
 /* Allocate space for 7 cards */
 char memory_cards[8 * 7];
-char memory_card_count = 0;
+char memory_card_count;
 
 void get_data_from_memory(void);
 void set_data_to_memory(void);
@@ -126,7 +126,7 @@ void get_data_from_memory(void) {
         /* Get start offset for card in local string */
         k = i * 8;
         /* Loop through the next 8 bytes in the local string */
-        for (j = 0; j < 8 j++) {
+        for (j = 0; j < 8; j++) {
             memory_cards[k + j] = card[j];
         }
     }
