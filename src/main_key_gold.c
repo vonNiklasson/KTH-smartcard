@@ -51,8 +51,7 @@ void main( void)
    
    delay(150);     /* give the lock time to get ready */
 
-   if(compare == 1)
-     string_out("1337666\r\n");  /* Change this to the ID of the card */
+   string_out("1337666\r\n");  /* Change this to the ID of the card */
 
    while(1) nop(); /* end of communication */
 }
