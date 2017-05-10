@@ -66,6 +66,10 @@ void main(void) {
 
         delay(100); /* Delay, because why not */
 
+        string_out(&card_str[0]);
+
+        delay(100);
+
         bit test = compare_string(&card_str[0], "joherik");
 
         if (test) {
