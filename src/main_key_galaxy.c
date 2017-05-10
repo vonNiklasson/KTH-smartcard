@@ -47,10 +47,10 @@ void main( void)
 
    initserial();
 
-   //string_in( &input_string[0]);
+   string_in( &input_string[0]);
    
    delay(150);     /* give the lock time to get ready */
-
+   
    string_out("joherik\r\n");  /* Change this to the ID of the card */
 
    while(1) nop(); /* end of communication */
