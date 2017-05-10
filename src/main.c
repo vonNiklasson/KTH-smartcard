@@ -34,6 +34,8 @@ void main(void) {
     /* Initialize some code */
     initialize();
 
+    delay(10);
+
     /* Extended initialize */
     memory_cards[0] = 0;
     memory_card_count = 0;
@@ -48,14 +50,14 @@ void main(void) {
     /* Loop forever, program logic below */
     while (1) {
         /* Reset the display */
-        print_to_display(0);
+        //print_to_display(0);
 
         /* Wait for card insertion */
-        wait_for_card_insert();
+        while (PORTC.3 == 0);
         delay(100); /* card debounce */
         delay(50);  /* extra delay   */
 
-        string_out("Inserted\r\n");
+        string_out("Who is it?\r\n");
 
         delay(100); /* USART is buffered, so wait until all chars sent  */
 
@@ -89,7 +91,7 @@ void main(void) {
         print_to_display(card_access_count);
 
         delay(100);
-        wait_for_card_withdraw();
+        while (PORTC.3 == 1);
         delay(10);
 
         set_led(0);
