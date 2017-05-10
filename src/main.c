@@ -120,7 +120,7 @@ char get_card_offset(char * card_id) {
 
 char create_card(char * card_id) {
     /* Get the new card offset */
-    card_offset = memory_card_count;
+    char card_offset = memory_card_count;
     /* Add 1 to the memory card count */
     memory_card_count = memory_card_count + 1;
 
