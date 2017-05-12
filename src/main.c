@@ -8,11 +8,6 @@
 #define MAX_STRING 16
 #define NEW_ACCESS_COUNT 5
 
-/* Include extended functions */
-#include "initialize.c"
-#include "str.c"
-#include "hardware.c"
-
 /* Allocate space for 7 cards */
 char memory_cards[8 * 2];
 char memory_card_count;
@@ -23,6 +18,9 @@ void get_data_from_memory(void);
 void set_data_to_memory(void);
 
 char get_card_offset(char * card_id);
+char get_card_accesses(char card_offset);
+char increase_card_accesses(char card_offset);
+char decrease_card_accesses(char card_offset);
 
 void reg_put_char(char data, char EEPROMadress);
 char reg_get_char(char EEPROMadress);
@@ -30,79 +28,113 @@ char reg_get_char(char EEPROMadress);
 void reg_put_word(const char * word, char reg_offset);
 void reg_get_word(char * word, char reg_offset);
 
+/*String related functions*/
+void put_char(char d_out);
+char get_char(void);
+void string_in(char * string);
+void string_out(const char * string);
+void printf(const char *string, char variable);
+bit compare_string(char * input_string, const char * candidate_string);
+
+/*Hardware related functions*/
+void wait_for_card_insert(void);
+void wait_for_card_withdraw(void);
+bit get_button_state(void);
+void set_led_red(bit state);
+void set_led_green(bit state);
+void print_to_display(char val);
+void delay(char millisec);
+
+/*Initializing and registry clearing*/
+void initialize(void);
+void overrun_recover(void);
+
 void main(void) {
-    /* Initialize some code */
-    initialize();
-
-    delay(10);
-
-    /* Extended initialize */
-    memory_cards[0] = 0;
-    memory_card_count = 0;
-    get_data_from_memory();
-
-    /* String to store text from card */
+	/* String to store text from card */
     char card_str[MAX_STRING];
     char card_offset;
     char card_access_count;
     bit has_access = 0;
+	bit test1 = 0;
+	bit test2 = 0;
+    /* Initialize some code */
+    initialize();
+
+    /* Extended initialize */
+    memory_cards[0] = 0;
+    memory_card_count = 0;
 
     /* Loop forever, program logic below */
     while (1) {
         /* Reset the display */
-        //print_to_display(0);
-
+        print_to_display(-1);
+		get_data_from_memory();
         /* Wait for card insertion */
         while (PORTC.3 == 0);
         delay(100); /* card debounce */
         delay(50);  /* extra delay   */
-
-        string_out("Who is it?\r\n");
-
+		char test = get_card_accesses(0);
+		/* ask the question */
+		printf("Card accesses: %d\r\n", PORTC.1);
+		
         delay(100); /* USART is buffered, so wait until all chars sent  */
 
-        overrun_recover();
+        /* empty the reciever FIFO, it's now full with garbage */
+		overrun_recover();
 
         /* Get id from card, stored in card_str */
         string_in(&card_str[0]);
-
-        delay(100); /* Delay, because why not */
-
-        string_out(&card_str[0]);
-
-        delay(100);
-
-        bit test = compare_string(&card_str[0], "joherik");
-
-        if (test) {
-            set_led(1);
+        
+        test1 = compare_string(&card_str[0], "joherik");
+		test2 = compare_string(&card_str[0], "1337666");
+		
+        if (test1 == 1 || test2 == 1) {
+            //set_led_red(1);
         }
-
+		
         /* Get the card offset id (if it exists) */
         card_offset = get_card_offset(&card_str[0]);
 
         if (card_offset == -1) {
-            /* Add new card */
+            //Add new card 
             card_offset = create_card(&card_str[0]);
         }
-
-
-        /* Print the number of accesses the user have left */
-        print_to_display(card_access_count);
+		
+		//Check if any accesses are left on the card and makes you refill
+		if (get_card_accesses(card_offset) < 1) {
+			set_led_red(1);
+			//While card is inserted loop this
+			while (PORTC.3 == 1) {
+				//Wait for button presses and add 1 access
+				while (!get_button_state() && PORTC.3 == 1);
+				if (PORTC.3 == 1) {
+					card_access_count = increase_card_accesses(card_offset);
+					print_to_display(card_access_count);
+				}
+				while (get_button_state() && PORTC.3 == 1);
+			}
+		}
+		else if (get_card_accesses(card_offset) >= 1) {
+			set_led_green(1);
+			card_access_count = decrease_card_accesses(card_offset);
+			print_to_display(card_access_count);
+		}
 
         delay(100);
         while (PORTC.3 == 1);
         delay(10);
 
-        set_led(0);
-        string_out("Widthdrawn\r\n");
-        delay(100); /* USART is buffered, so wait until all chars sent  */
-
-        overrun_recover();
-
-        delay(100);
+        set_led_red(0);
+		set_led_green(0);
+        delay(100);   /* card debounce */
+		set_data_to_memory();
     }
 }
+
+/********************
+     FUNCTIONS
+     =========
+*********************/
 
 char get_card_offset(char * card_id) {
     int i, j, k;
@@ -130,6 +162,27 @@ char get_card_offset(char * card_id) {
     return -1;
 }
 
+//Get the number of accesses of a specific card 
+char get_card_accesses(char card_offset) {
+	char temp_offset = card_offset;
+	char current_accesses = memory_cards[(temp_offset * 8) + 7];
+	return current_accesses;
+}
+
+//Increase the number of accesses of a specific card by one 
+char increase_card_accesses(char card_offset) {
+	char temp_offset = card_offset;
+	memory_cards[(temp_offset * 8) + 7] = memory_cards[(temp_offset * 8) + 7] + 1;
+	return memory_cards[(temp_offset * 8) + 7];
+}
+
+//Decrease the number of accesses of a specific card by one 
+char decrease_card_accesses(char card_offset) {
+	char temp_offset = card_offset;
+	memory_cards[(temp_offset * 8) + 7] = memory_cards[(temp_offset * 8) + 7] - 1;
+	return memory_cards[(temp_offset * 8) + 7];
+}
+
 char create_card(char * card_id) {
     /* Get the new card offset */
     char card_offset = memory_card_count;
@@ -140,10 +193,10 @@ char create_card(char * card_id) {
     char temp_char;
     for (i = 0; i < 7; i++) {
         temp_char = card_id[i];
-        memory_cards[card_offset + i] = temp_char;
+        memory_cards[(8 * card_offset) + i] = temp_char;
     }
-    /* Set the last byte to 0 */
-    memory_cards[card_offset + i + 1] = 0;
+    /* Set the last byte to 0       (8 * card_offset) + i + 1   */
+    memory_cards[(8 * card_offset) + i] = 0;
 
     /* Return the new card offset */
     return card_offset;
@@ -178,7 +231,7 @@ void set_data_to_memory(void) {
     char i;
     /* Count for how many cards that are stored */
     for (i = 0; i < memory_card_count; i++) {
-        reg_put_word(&memory_cards[i], i);
+        reg_put_word(&memory_cards[0], i);
     }
 }
 
@@ -190,7 +243,7 @@ void reg_put_word(const char * word, char reg_offset) {
     char c;
     int i;
     for (i = 0; i < 8; i++) {
-        c = word[i];
+        c = word[offset - 1 + i];
         reg_put_char(c, offset + i);
     }
 }
@@ -235,4 +288,221 @@ char reg_get_char(char EEPROMadress) {
     RD = 0;
     return temp;          /* data to be read                   */
     /* End of read EEPROM-data sequence                        */
+}
+
+/* Sends one char */
+void put_char(char d_out) {
+    while (!TXIF);  /* wait until previus character transmitted   */
+    TXREG = d_out;
+    return; /* done */
+}
+
+/* Recieves one char */
+char get_char(void) {
+    char d_in = '\r';
+    while (!RCIF && PORTC.3);  /* wait for character or card removal */
+    if(!RCIF) return d_in;
+    d_in = RCREG;
+    return d_in;
+}
+
+void string_in(char * string) {
+    char charCount, c;
+    for(charCount = 0; ; charCount++) {
+        c = get_char();         /* input 1 character         */
+        string[charCount] = c;  /* store the character       */
+        // put_char( c );       /* don't echo the character  */
+        /* end of input */
+        if((charCount == (MAX_STRING-1)) || (c=='\r')) {
+            string[charCount] = '\0'; /* add "end of string" */
+            return;
+        }
+    }
+}
+
+void string_out(const char * string) {
+    char i, k;
+    for(i = 0 ; ; i++) {
+        k = string[i];
+        if( k == '\0') return;   /* found end of string */
+        put_char(k);
+    }
+    return;
+}
+
+void printf(const char *string, char variable)
+{
+  char i, k, m, a, b;
+  for(i = 0 ; ; i++)
+   {
+     k = string[i];
+     if( k == '\0') break;   // at end of string
+     if( k == '%')           // insert variable in string
+      { 
+        i++;
+        k = string[i];
+        switch(k)
+         {
+           case 'd':         // %d  signed 8bit
+             if( variable.7 ==1) put_char('-');
+             else put_char(' ');
+             if( variable > 127) variable = -variable;  // no break!
+           case 'b':         // %b BINARY 8bit
+             for( m = 0 ; m < 8 ; m++ )
+              {
+                if (variable.7 == 1) put_char('1');
+                else put_char('0');
+                variable = rl(variable);
+               }
+              break;
+           case 'c':         // %c  'char'
+             put_char(variable); 
+             break;
+           case '%':
+             put_char('%');
+             break;
+           default:          // not implemented 
+             put_char('!');   
+         }   
+      }
+      else put_char(k); 
+   }
+}
+
+
+bit compare_string(char * input_string, const char * candidate_string) {
+    /* compares input with the candidate string */
+    char i, c, d;
+    for(i=0; ; i++) {
+        c = input_string[i];
+        d = candidate_string[i];
+        if(d != c )     return 0;   /* no match    */
+        if(d == '\0')   return 1;   /* exact match */
+    }
+}
+
+/* Stall program til card is inserted */
+void wait_for_card_insert(void) {
+    while (PORTC.3 == 0);
+}
+
+/* Stall program til card is withdrawn */
+void wait_for_card_withdraw(void) {
+    while (PORTC.3 == 1);
+}
+
+bit get_button_state(void) {
+	bit input;
+	while(1) {
+		input = PORTC.1;
+		delay(100);
+		if (input == PORTC.1) {
+			return input;
+		}
+	}
+}
+
+void set_led_red(bit state) {
+    PORTC.2 = state;
+    nop();
+}
+
+void set_led_green(bit state) {
+    PORTB.4 = state;
+    nop();
+}
+
+void print_to_display(char val) {
+    /* Print hex-value to 7-segment display */
+	char value = val;
+	char i;
+	if (value == -1) {
+		PORTC.7 = 1;
+		delay(50);
+		PORTC.7 = 0;
+		delay(50);
+		for (i = 1; i < 15; i++) {
+			PORTC.6 = 1;
+			delay(50);
+			PORTC.6 = 0;
+			delay(50);
+		}
+	}
+	else if (value == 0) {
+		PORTC.7 = 1;
+		delay(50);
+		PORTC.7 = 0;
+		delay(50);
+	}
+	else if (value > 0 && value < 10) {
+		PORTC.7 = 1;
+		delay(50);
+		PORTC.7 = 0;
+		delay(50);
+		for (i = 1; i <= value; i++) {
+			PORTC.6 = 1;
+			delay(50);
+			PORTC.6 = 0;
+			delay(50);
+		}
+	}
+}
+
+/*  Delays a multiple of 1 milliseconds at 4 MHz
+    using the TMR0 timer by B. Knudsen */
+void delay(char millisec) {
+    OPTION = 2;  /* prescaler divide by 8        */
+    do {
+        TMR0 = 0;
+        while (TMR0 < 125);   /* 125 * 8 = 1000  */
+    } while (--millisec > 0);
+}
+
+void initialize(void) {
+    TRISA.0 = 1; /* RA0 not to disturb PK2 UART Tool */
+    ANSEL.0 = 0; /* RA0 digital input */
+    TRISA.1 = 1; /* RA1 not to disturb PK2 UART Tool */
+    ANSEL.1 = 0; /* RA1 digital input */
+
+    /* Initialize PIC16F690 serialcom port */
+    /* One start bit, one stop bit, 8 data bit, no parity. 9600 Baud. */
+
+    TXEN = 1;      /* transmit enable                   */
+    SYNC = 0;      /* asynchronous operation            */
+    TX9  = 0;      /* 8 bit transmission                */
+    SPEN = 1;
+
+    BRGH  = 0;     /* settings for 6800 Baud            */
+    BRG16 = 1;     /* @ 4 MHz-clock frequency           */
+    SPBRG = 25;
+
+    CREN = 1;      /* Continuous receive                */
+    RX9  = 0;      /* 8 bit reception                   */
+    ANSELH.3 = 0;  /* RB5 digital input for serial_in   */
+
+    /* More init */
+    TRISC.3 = 1;  /* RC3 card contact is input       */
+    ANSEL.7 = 0;  /* RC3 digital input               */
+    TRISC.2 = 0;  /* RC2 Red LED for no access */
+    PORTC.2 = 0;  /* RC2 initially off            */
+	TRISB.4 = 0;  /* RB4 Green LED for access */
+	PORTB.4 = 0;  /* RB4 initially off            */
+	TRISC.1 = 1;  /* RC1 Button is set to input */
+	ANSEL.5 = 0;  /* RC1 digital input               */
+	
+	//Display initialize
+	TRISC.7 = 0;  /* RC7 Output to reset pin on display */
+	PORTC.7 = 0;  /* RC7 initially off */
+	TRISC.6 = 0;  /* RC6 Output to display clock */
+	PORTC.6 = 0;  /* RC6 initially off */
+	TRISC.4 = 0;  /* RC4 Enable display */
+	PORTC.4 = 1;  /* RC4 on */
+}
+
+void overrun_recover(void) {
+    char trash;
+    trash = RCREG;
+    trash = RCREG;
+    CREN = 0;
+    CREN = 1;
 }
