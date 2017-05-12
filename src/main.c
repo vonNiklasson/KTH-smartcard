@@ -67,7 +67,7 @@ void main(void) {
     /* Loop forever, program logic below */
     while (1) {
         /* Reset the display */
-        //print_to_display(0);
+        print_to_display(-1);
 		get_data_from_memory();
         /* Wait for card insertion */
         while (PORTC.3 == 0);
@@ -108,18 +108,17 @@ void main(void) {
 				//Wait for button presses and add 1 access
 				while (!get_button_state() && PORTC.3 == 1);
 				if (PORTC.3 == 1) {
-					increase_card_accesses(card_offset);
+					card_access_count = increase_card_accesses(card_offset);
+					print_to_display(card_access_count);
 				}
 				while (get_button_state() && PORTC.3 == 1);
 			}
 		}
 		else if (get_card_accesses(card_offset) >= 1) {
 			set_led_green(1);
-			decrease_card_accesses(card_offset);
+			card_access_count = decrease_card_accesses(card_offset);
+			print_to_display(card_access_count);
 		}
-
-        /* Print the number of accesses the user have left */
-        //print_to_display(card_access_count);
 
         delay(100);
         while (PORTC.3 == 1);
@@ -415,6 +414,38 @@ void set_led_green(bit state) {
 
 void print_to_display(char val) {
     /* Print hex-value to 7-segment display */
+	char value = val;
+	char i;
+	if (value == -1) {
+		PORTC.7 = 1;
+		delay(50);
+		PORTC.7 = 0;
+		delay(50);
+		for (i = 1; i < 15; i++) {
+			PORTC.6 = 1;
+			delay(50);
+			PORTC.6 = 0;
+			delay(50);
+		}
+	}
+	else if (value == 0) {
+		PORTC.7 = 1;
+		delay(50);
+		PORTC.7 = 0;
+		delay(50);
+	}
+	else if (value > 0 && value < 10) {
+		PORTC.7 = 1;
+		delay(50);
+		PORTC.7 = 0;
+		delay(50);
+		for (i = 1; i <= value; i++) {
+			PORTC.6 = 1;
+			delay(50);
+			PORTC.6 = 0;
+			delay(50);
+		}
+	}
 }
 
 /*  Delays a multiple of 1 milliseconds at 4 MHz
@@ -458,6 +489,14 @@ void initialize(void) {
 	PORTB.4 = 0;  /* RB4 initially off            */
 	TRISC.1 = 1;  /* RC1 Button is set to input */
 	ANSEL.5 = 0;  /* RC1 digital input               */
+	
+	//Display initialize
+	TRISC.7 = 0;  /* RC7 Output to reset pin on display */
+	PORTC.7 = 0;  /* RC7 initially off */
+	TRISC.6 = 0;  /* RC6 Output to display clock */
+	PORTC.6 = 0;  /* RC6 initially off */
+	TRISC.4 = 0;  /* RC4 Enable display */
+	PORTC.4 = 1;  /* RC4 on */
 }
 
 void overrun_recover(void) {
