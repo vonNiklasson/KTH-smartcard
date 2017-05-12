@@ -18,6 +18,9 @@ void get_data_from_memory(void);
 void set_data_to_memory(void);
 
 char get_card_offset(char * card_id);
+char get_card_accesses(char card_offset);
+char increase_card_accesses(char card_offset);
+char decrease_card_accesses(char card_offset);
 
 void reg_put_char(char data, char EEPROMadress);
 char reg_get_char(char EEPROMadress);
@@ -36,7 +39,9 @@ bit compare_string(char * input_string, const char * candidate_string);
 /*Hardware related functions*/
 void wait_for_card_insert(void);
 void wait_for_card_withdraw(void);
-void set_led(bit state);
+bit get_button_state(void);
+void set_led_red(bit state);
+void set_led_green(bit state);
 void print_to_display(char val);
 void delay(char millisec);
 
@@ -59,8 +64,6 @@ void main(void) {
     memory_cards[0] = 0;
     memory_card_count = 0;
 
-    
-
     /* Loop forever, program logic below */
     while (1) {
         /* Reset the display */
@@ -70,9 +73,9 @@ void main(void) {
         while (PORTC.3 == 0);
         delay(100); /* card debounce */
         delay(50);  /* extra delay   */
-
+		char test = get_card_accesses(0);
 		/* ask the question */
-		printf("Card offset: %d\r\n", memory_cards[8]);
+		printf("Card accesses: %d\r\n", PORTC.1);
 		
         delay(100); /* USART is buffered, so wait until all chars sent  */
 
@@ -86,7 +89,7 @@ void main(void) {
 		test2 = compare_string(&card_str[0], "1337666");
 		
         if (test1 == 1 || test2 == 1) {
-            set_led(1);
+            //set_led_red(1);
         }
 		
         /* Get the card offset id (if it exists) */
@@ -96,7 +99,24 @@ void main(void) {
             //Add new card 
             card_offset = create_card(&card_str[0]);
         }
-
+		
+		//Check if any accesses are left on the card and makes you refill
+		if (get_card_accesses(card_offset) < 1) {
+			set_led_red(1);
+			//While card is inserted loop this
+			while (PORTC.3 == 1) {
+				//Wait for button presses and add 1 access
+				while (!get_button_state() && PORTC.3 == 1);
+				if (PORTC.3 == 1) {
+					increase_card_accesses(card_offset);
+				}
+				while (get_button_state() && PORTC.3 == 1);
+			}
+		}
+		else if (get_card_accesses(card_offset) >= 1) {
+			set_led_green(1);
+			decrease_card_accesses(card_offset);
+		}
 
         /* Print the number of accesses the user have left */
         //print_to_display(card_access_count);
@@ -105,7 +125,8 @@ void main(void) {
         while (PORTC.3 == 1);
         delay(10);
 
-        set_led(0);
+        set_led_red(0);
+		set_led_green(0);
         delay(100);   /* card debounce */
 		set_data_to_memory();
     }
@@ -140,6 +161,27 @@ char get_card_offset(char * card_id) {
 
     /* Otherwise, return -1 */
     return -1;
+}
+
+//Get the number of accesses of a specific card 
+char get_card_accesses(char card_offset) {
+	char temp_offset = card_offset;
+	char current_accesses = memory_cards[(temp_offset * 8) + 7];
+	return current_accesses;
+}
+
+//Increase the number of accesses of a specific card by one 
+char increase_card_accesses(char card_offset) {
+	char temp_offset = card_offset;
+	memory_cards[(temp_offset * 8) + 7] = memory_cards[(temp_offset * 8) + 7] + 1;
+	return memory_cards[(temp_offset * 8) + 7];
+}
+
+//Decrease the number of accesses of a specific card by one 
+char decrease_card_accesses(char card_offset) {
+	char temp_offset = card_offset;
+	memory_cards[(temp_offset * 8) + 7] = memory_cards[(temp_offset * 8) + 7] - 1;
+	return memory_cards[(temp_offset * 8) + 7];
 }
 
 char create_card(char * card_id) {
@@ -350,8 +392,24 @@ void wait_for_card_withdraw(void) {
     while (PORTC.3 == 1);
 }
 
-void set_led(bit state) {
+bit get_button_state(void) {
+	bit input;
+	while(1) {
+		input = PORTC.1;
+		delay(100);
+		if (input == PORTC.1) {
+			return input;
+		}
+	}
+}
+
+void set_led_red(bit state) {
     PORTC.2 = state;
+    nop();
+}
+
+void set_led_green(bit state) {
+    PORTB.4 = state;
     nop();
 }
 
@@ -394,8 +452,12 @@ void initialize(void) {
     /* More init */
     TRISC.3 = 1;  /* RC3 card contact is input       */
     ANSEL.7 = 0;  /* RC3 digital input               */
-    TRISC.2 = 0;  /* RC2 lock (lightdiode) is output */
-    PORTC.2 = 0;  /* RC2 initially locked            */
+    TRISC.2 = 0;  /* RC2 Red LED for no access */
+    PORTC.2 = 0;  /* RC2 initially off            */
+	TRISB.4 = 0;  /* RB4 Green LED for access */
+	PORTB.4 = 0;  /* RB4 initially off            */
+	TRISC.1 = 1;  /* RC1 Button is set to input */
+	ANSEL.5 = 0;  /* RC1 digital input               */
 }
 
 void overrun_recover(void) {
