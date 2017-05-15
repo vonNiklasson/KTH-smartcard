@@ -101,33 +101,46 @@ void main(void) {
             card_offset = create_card(&card_str[0]);
         }
 		
+        card_access_count = get_card_accesses(card_offset);
+        nop();
+
 		//Check if any accesses are left on the card and makes you refill
-		if (get_card_accesses(card_offset) == 0) {
+        if (card_access_count > 0) {
+            set_led_green(1);
+            nop();
+            // Decrease the number of accesses
+            card_access_count = decrease_card_accesses(card_offset);
+        }
+		else if (card_access_count == 0) {
 			set_led_red(1);
 			nop();
 		}
-		else if (get_card_accesses(card_offset) > 0) {
-			set_led_green(1);
-            nop();
-		}
-        //While card is inserted loop this
+
+        print_to_display(card_access_count);
+
+        //While card is inserted loop the 
+        // ability to increase the number of access
         while (PORTC.3 == 1) {
             //Wait for button presses and add 1 access
             while (!get_button_state() && PORTC.3 == 1);
-            if (PORTC.3 == 1) {
+            /* If the button is pressed, increase the access count */
+            if (get_button_state()) {
                 card_access_count = increase_card_accesses(card_offset);
+                nop();
                 print_to_display(card_access_count);
             }
+            /* Wait for debounce of the button */
             while (get_button_state() && PORTC.3 == 1);
         }
 
-        delay(100);
-        while (PORTC.3 == 1);
         delay(10);
 
+        /* Reset the LED:s */
         set_led_red(0);
 		set_led_green(0);
         delay(100);   /* card debounce */
+
+        /* Write the new information to the memory */
 		set_data_to_memory();
     }
 }
