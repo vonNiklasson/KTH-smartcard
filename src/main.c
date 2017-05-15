@@ -102,27 +102,24 @@ void main(void) {
         }
 		
 		//Check if any accesses are left on the card and makes you refill
-		if (get_card_accesses(card_offset) < 1) {
+		if (get_card_accesses(card_offset) == 0) {
 			set_led_red(1);
 			nop();
-			delay(1);
-			print_to_display(0);
-			//While card is inserted loop this
-			while (PORTC.3 == 1) {
-				//Wait for button presses and add 1 access
-				while (!get_button_state() && PORTC.3 == 1);
-				if (PORTC.3 == 1) {
-					card_access_count = increase_card_accesses(card_offset);
-					print_to_display(card_access_count);
-				}
-				while (get_button_state() && PORTC.3 == 1);
-			}
 		}
-		else if (get_card_accesses(card_offset) >= 1) {
+		else if (get_card_accesses(card_offset) > 0) {
 			set_led_green(1);
-			card_access_count = decrease_card_accesses(card_offset);
-			print_to_display(card_access_count);
+            nop();
 		}
+        //While card is inserted loop this
+        while (PORTC.3 == 1) {
+            //Wait for button presses and add 1 access
+            while (!get_button_state() && PORTC.3 == 1);
+            if (PORTC.3 == 1) {
+                card_access_count = increase_card_accesses(card_offset);
+                print_to_display(card_access_count);
+            }
+            while (get_button_state() && PORTC.3 == 1);
+        }
 
         delay(100);
         while (PORTC.3 == 1);
