@@ -103,6 +103,9 @@ void main(void) {
 		//Check if any accesses are left on the card and makes you refill
 		if (get_card_accesses(card_offset) < 1) {
 			set_led_red(1);
+			nop();
+			delay(1);
+			print_to_display(0);
 			//While card is inserted loop this
 			while (PORTC.3 == 1) {
 				//Wait for button presses and add 1 access
@@ -404,6 +407,7 @@ bit get_button_state(void) {
 
 void set_led_red(bit state) {
     PORTC.2 = state;
+	delay(500);
     nop();
 }
 
@@ -417,33 +421,20 @@ void print_to_display(char val) {
 	char value = val;
 	char i;
 	if (value == -1) {
-		PORTC.7 = 1;
-		delay(50);
-		PORTC.7 = 0;
-		delay(50);
-		for (i = 1; i < 15; i++) {
-			PORTC.6 = 1;
-			delay(50);
-			PORTC.6 = 0;
-			delay(50);
-		}
+		PORTC.4 = 0;
 	}
-	else if (value == 0) {
+	else if (value >= 0 && value < 10) {
+		PORTC.4 = 1;
+		delay(1);
 		PORTC.7 = 1;
-		delay(50);
+		delay(1);
 		PORTC.7 = 0;
-		delay(50);
-	}
-	else if (value > 0 && value < 10) {
-		PORTC.7 = 1;
-		delay(50);
-		PORTC.7 = 0;
-		delay(50);
-		for (i = 1; i <= value; i++) {
+		delay(1);
+		for (i = 0; i < value; i++) {
 			PORTC.6 = 1;
-			delay(50);
+			delay(1);
 			PORTC.6 = 0;
-			delay(50);
+			delay(1);
 		}
 	}
 }
