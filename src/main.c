@@ -34,7 +34,6 @@ void put_char(char d_out);
 char get_char(void);
 void string_in(char * string);
 void string_out(const char * string);
-void printf(const char *string, char variable);
 bit compare_string(char * input_string, const char * candidate_string);
 
 /*Hardware related functions*/
@@ -74,9 +73,9 @@ void main(void) {
         while (PORTC.3 == 0);
         delay(100); /* card debounce */
         delay(50);  /* extra delay   */
-		char test = get_card_accesses(0);
+		
 		/* ask the question */
-		printf("Card accesses: %d\r\n", PORTC.1);
+		string_out("Send the ID please\r\n");
 		
         delay(100); /* USART is buffered, so wait until all chars sent  */
 
@@ -85,13 +84,6 @@ void main(void) {
 
         /* Get id from card, stored in card_str */
         string_in(&card_str[0]);
-        
-        test1 = compare_string(&card_str[0], "joherik");
-		test2 = compare_string(&card_str[0], "1337666");
-		
-        if (test1 == 1 || test2 == 1) {
-            //set_led_red(1);
-        }
 		
         /* Get the card offset id (if it exists) */
         card_offset = get_card_offset(&card_str[0]);
@@ -352,46 +344,6 @@ void string_out(const char * string) {
     }
     return;
 }
-
-void printf(const char *string, char variable)
-{
-  char i, k, m, a, b;
-  for(i = 0 ; ; i++)
-   {
-     k = string[i];
-     if( k == '\0') break;   // at end of string
-     if( k == '%')           // insert variable in string
-      { 
-        i++;
-        k = string[i];
-        switch(k)
-         {
-           case 'd':         // %d  signed 8bit
-             if( variable.7 ==1) put_char('-');
-             else put_char(' ');
-             if( variable > 127) variable = -variable;  // no break!
-           case 'b':         // %b BINARY 8bit
-             for( m = 0 ; m < 8 ; m++ )
-              {
-                if (variable.7 == 1) put_char('1');
-                else put_char('0');
-                variable = rl(variable);
-               }
-              break;
-           case 'c':         // %c  'char'
-             put_char(variable); 
-             break;
-           case '%':
-             put_char('%');
-             break;
-           default:          // not implemented 
-             put_char('!');   
-         }   
-      }
-      else put_char(k); 
-   }
-}
-
 
 bit compare_string(char * input_string, const char * candidate_string) {
     /* compares input with the candidate string */
