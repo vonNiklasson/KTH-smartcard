@@ -1,6 +1,5 @@
 /* main_key_template.c  question and answer, compare strings     */
 /* This program is for 16F84 Gold Card                  */
-/* All code in this file is from the smartkey.c template file                */
 
 /*
 SmartCard contact
@@ -61,14 +60,14 @@ void main( void)
      =========
 *********************/
 
-
+/* EXAMPLE CODE FROM IE1206 */
 void initserial( void ) /* initialise serialcom port */
 {
    PORTB.7 = 1;
    TRISB.7 = 1;  /* input mode */
 }
 
-
+/* EXAMPLE CODE FROM IE1206 */
 void putchar( char d_out )  /* sends one char */
 {
    char bitCount, ti;
@@ -88,7 +87,7 @@ void putchar( char d_out )  /* sends one char */
    return; /* all done */
 }
 
-
+/* EXAMPLE CODE FROM IE1206 */
 char getchar( void )  /* recieves one char */
 {
    /* One start bit, one stop bit, 8 data bit, no parity = 10 bit. */
@@ -110,6 +109,7 @@ char getchar( void )  /* recieves one char */
    return d_in;
 }
 
+/* EXAMPLE CODE FROM IE1206 */
 void string_in( char * input_string )
 {
    char charCount, c;
@@ -126,7 +126,7 @@ void string_in( char * input_string )
        }
 }
 
-
+/* EXAMPLE CODE FROM IE1206 */
 void string_out(const char * string)
 {
   char i, k;
@@ -139,7 +139,7 @@ void string_out(const char * string)
   return;
 }
 
-
+/* EXAMPLE CODE FROM IE1206 */
 bit check_candidate( char * input_string, const char * candidate_string )
 {
    /* compares input buffer with the candidate string */
@@ -153,6 +153,7 @@ bit check_candidate( char * input_string, const char * candidate_string )
      }
 }
 
+/* EXAMPLE CODE FROM IE1206 */
 void delay( char millisec)
 /* 
   Delays a multiple of 1 milliseconds at 4 MHz
