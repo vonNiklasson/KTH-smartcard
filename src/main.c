@@ -406,7 +406,7 @@ bit get_button_state(void) {
 }
 
 void set_led_red(bit state) {
-    PORTC.2 = state;
+    PORTA.2 = state;
     nop();
 }
 
@@ -480,8 +480,8 @@ void initialize(void) {
     /* More init */
     TRISC.3 = 1;  /* RC3 card contact is input       */
     ANSEL.7 = 0;  /* RC3 digital input               */
-    TRISC.2 = 0;  /* RC2 Red LED for no access */
-    PORTC.2 = 0;  /* RC2 initially off            */
+    TRISA.2 = 0;  /* RC2 Red LED for no access */
+    PORTA.2 = 0;  /* RC2 initially off            */
 	TRISB.4 = 0;  /* RB4 Green LED for access */
 	PORTB.4 = 0;  /* RB4 initially off            */
 	TRISC.1 = 1;  /* RC1 Button is set to input */
