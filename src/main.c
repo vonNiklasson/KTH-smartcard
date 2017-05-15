@@ -19,6 +19,7 @@ void set_data_to_memory(void);
 
 char get_card_offset(char * card_id);
 char get_card_accesses(char card_offset);
+void set_card_accesses(char card_offset, const char accesses);
 char increase_card_accesses(char card_offset);
 char decrease_card_accesses(char card_offset);
 
@@ -167,16 +168,25 @@ char get_card_offset(char * card_id) {
 
 //Get the number of accesses of a specific card 
 char get_card_accesses(char card_offset) {
-	char temp_offset = card_offset;
-	char current_accesses = memory_cards[(temp_offset * 8) + 7];
-	return current_accesses;
+    char current_accesses = memory_cards[(card_offset * 8) + 7];
+    return current_accesses;
+}
+
+//Get the number of accesses of a specific card 
+void set_card_accesses(char card_offset, const char accesses) {
+    memory_cards[(card_offset * 8) + 7] = accesses;
 }
 
 //Increase the number of accesses of a specific card by one 
 char increase_card_accesses(char card_offset) {
-	char temp_offset = card_offset;
-	memory_cards[(temp_offset * 8) + 7] = memory_cards[(temp_offset * 8) + 7] + 1;
-	return memory_cards[(temp_offset * 8) + 7];
+    char current_access = get_card_accesses(card_offset);
+
+    if (current_access < 9) { 
+        current_access++; 
+    }
+
+	set_card_accesses(card_offset, current_access);
+	return current_access;
 }
 
 //Decrease the number of accesses of a specific card by one 
@@ -398,7 +408,7 @@ bit get_button_state(void) {
 	bit input;
 	while(1) {
 		input = PORTC.1;
-		delay(100);
+		delay(10);
 		if (input == PORTC.1) {
 			return input;
 		}
