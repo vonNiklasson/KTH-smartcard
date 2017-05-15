@@ -407,7 +407,6 @@ bit get_button_state(void) {
 
 void set_led_red(bit state) {
     PORTC.2 = state;
-	delay(500);
     nop();
 }
 
@@ -417,23 +416,30 @@ void set_led_green(bit state) {
 }
 
 void print_to_display(char val) {
+    nop();
     /* Print hex-value to 7-segment display */
 	char value = val;
 	char i;
 	if (value == -1) {
 		PORTC.4 = 0;
+        nop();
 	}
 	else if (value >= 0 && value < 10) {
 		PORTC.4 = 1;
+        nop();
 		delay(1);
 		PORTC.7 = 1;
+        nop();
 		delay(1);
 		PORTC.7 = 0;
+        nop();
 		delay(1);
 		for (i = 0; i < value; i++) {
 			PORTC.6 = 1;
+            nop();
 			delay(1);
 			PORTC.6 = 0;
+            nop();
 			delay(1);
 		}
 	}
